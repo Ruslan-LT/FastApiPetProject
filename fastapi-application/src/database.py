@@ -8,18 +8,8 @@ async_engine = create_async_engine(
     echo=True,
 )
 
-
 async_session_factory = async_sessionmaker(async_engine)
 
-
-async def get_scoped_session():
-    session = async_scoped_session(
-        async_session_factory,
-        scopefunc=current_task,
-    )
-    return session
-
 async def session_dependency():
-    session = await get_scoped_session()
-    yield session
-    await session.close()
+    async with async_session_factory() as session:
+        yield session

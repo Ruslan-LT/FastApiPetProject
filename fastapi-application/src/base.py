@@ -4,4 +4,4 @@ from sqlalchemy.testing.schema import mapped_column
 
 
 class Base(DeclarativeBase):
-    id:Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    ...

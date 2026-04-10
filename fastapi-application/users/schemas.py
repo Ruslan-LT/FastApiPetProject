@@ -2,11 +2,10 @@ from pydantic import BaseModel
 
 
 class UserBase(BaseModel):
-    email: str
     username: str
     first_name: str | None = None
     last_name: str | None = None
-    disabled: bool | None = None
+    email: str
 
 
 class UserCreate(UserBase):
@@ -16,6 +15,10 @@ class UserCreate(UserBase):
 class UserInDB(UserBase):
     id: int
     hashed_password: str
+
+    class Config:
+        from_attributes = True
+
 
 class UserRead(UserBase):
     id: int
