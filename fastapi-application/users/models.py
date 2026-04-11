@@ -1,5 +1,5 @@
 from sqlalchemy import String,Integer, Boolean, UniqueConstraint, ForeignKey
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from enum import Enum
 
 from src.base import Base
@@ -22,6 +22,8 @@ class UserORM(Base):
     disabled:Mapped[bool] = mapped_column(default=False,
                                           server_default='false')
 
+    user_session:Mapped['SessionORM'] = relationship(back_populates='user',)
+
     __table_args__ = (
         UniqueConstraint('username'),
     )
@@ -29,4 +31,6 @@ class UserORM(Base):
 class SessionORM(Base):
     __tablename__ = "sessions"
     session_id: Mapped[str] = mapped_column(String(64), primary_key=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
+
+    user:Mapped['UserORM'] = relationship(back_populates='user_session')
