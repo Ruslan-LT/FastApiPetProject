@@ -1,3 +1,6 @@
+from datetime import datetime, timedelta
+from sqlalchemy import DateTime
+from black import timezone
 from sqlalchemy import String,Integer, Boolean, UniqueConstraint, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from enum import Enum
@@ -32,5 +35,10 @@ class SessionORM(Base):
     __tablename__ = "sessions"
     session_id: Mapped[str] = mapped_column(String(64), primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
+    expires_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc) + timedelta(days=1),
+        index=True
+    )
 
     user:Mapped['UserORM'] = relationship(back_populates='user_session')

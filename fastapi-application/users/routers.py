@@ -10,8 +10,11 @@ user_router = APIRouter(tags=["users"],
                         prefix="/users",)
 
 @user_router.post("/register", response_model=UserRead)
-async def create_user(user: UserCreate, session:Annotated[AsyncSession, Depends(session_dependency)]):
+async def create_user(user: UserCreate, session:Annotated[AsyncSession, Depends(session_dependency)], response: Response, request: Request):
+    if request.cookies.get(COOKIE_SESSION_ID_KEY):
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="User already registered",)
     result = await create_user_with_orm(user, session)
+    response.status_code = status.HTTP_201_CREATED
     return result
 
 @user_router.post("/login")
@@ -22,7 +25,7 @@ async def user_login(response: Response, auth_user:Annotated[UserRead, Depends(g
     session_id = await generate_session_id()
     if res:
         await create_session_from_orm(session_id, auth_user.id,session)
-        response.set_cookie(COOKIE_SESSION_ID_KEY, str(session_id))
+        response.set_cookie(COOKIE_SESSION_ID_KEY, str(session_id), max_age=86400, expires=86400)
         return {
             'result': 'ok'
         }
