@@ -4,7 +4,6 @@ from pwdlib import PasswordHash
 from fastapi import Request, HTTPException, Depends, status
 from typing import Annotated
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
-import secrets
 from users.schemas import UserRead
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.database import session_dependency
