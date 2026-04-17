@@ -4,13 +4,12 @@ from black import timezone
 from sqlalchemy import String,Integer, Boolean, UniqueConstraint, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from enum import Enum
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from news.models import PostORM
 
 from src.base import Base
-
-class RoleEnum(Enum):
-    admin = "admin"
-    user = "user"
-
 
 class UserORM(Base):
     __tablename__ = 'users'
@@ -20,16 +19,26 @@ class UserORM(Base):
     first_name:Mapped[str] = mapped_column(String(30))
     last_name:Mapped[str] = mapped_column(String(30))
     email:Mapped[str] = mapped_column(String(35))
-    role:Mapped[RoleEnum] = mapped_column(default=RoleEnum.user,
-                                          server_default='user')
     disabled:Mapped[bool] = mapped_column(default=False,
                                           server_default='false')
+
+    admin:Mapped['AdminORM'] = relationship( back_populates='user', )
+
+    posts:Mapped[list['PostORM']] = relationship(back_populates='user',)
 
     user_session:Mapped['SessionORM'] = relationship(back_populates='user',)
 
     __table_args__ = (
         UniqueConstraint('username'),
     )
+
+class AdminORM(Base):
+    __tablename__ = 'admins'
+    id:Mapped[int] = mapped_column(primary_key=True)
+    user_id:Mapped[int] = mapped_column(ForeignKey('users.id'))
+
+    user:Mapped['UserORM'] = relationship(back_populates='admin')
+
 
 class SessionORM(Base):
     __tablename__ = "sessions"

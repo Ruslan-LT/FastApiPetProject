@@ -1,6 +1,5 @@
 from pydantic import BaseModel
 
-
 class UserBase(BaseModel):
     username: str
     first_name: str | None = None
@@ -18,10 +17,7 @@ class UserInDB(UserBase):
     class Config:
         from_attributes = True
 
-class UserUpdate(UserBase):
-    ...
-
-class UserUpdatePartial(BaseModel):
+class UserUpdate(BaseModel):
     username: str | None = None
     first_name: str | None = None
     last_name: str | None = None

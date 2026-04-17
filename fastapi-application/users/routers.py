@@ -1,10 +1,11 @@
 from typing import Annotated, Any
 from fastapi import (Depends, APIRouter, Response, Request, HTTPException, status)
-from users.schemas import UserInDB, UserCreate, UserRead
+from users.schemas import UserInDB, UserCreate, UserRead, UserUpdate
 from users.security import security, get_password_hash, verify_password,\
-                            get_auth_username,COOKIE_SESSION_ID_KEY,generate_session_id
+                            get_auth_username,COOKIE_SESSION_ID_KEY,generate_session_id, get_session_id
 from users.service import UserService
 from users.dependencies import get_user_service
+
 user_router = APIRouter(tags=["users"],
                         prefix="/users",)
 
@@ -24,9 +25,17 @@ async def user_logout(response: Response,
     return await user_service.logout_user_account(response, request)
 
 @user_router.get("/me", response_model=UserRead, status_code=status.HTTP_200_OK)
-async def get_current_user(response: Response, request: Request,
-                           user_service:UserService=Depends(get_user_service)):
-    return await user_service.read_auth_user_account(request)
+async def get_current_user(request: Request,
+                           user_service:UserService=Depends(get_user_service),
+                           session_id:str=Depends(get_session_id)):
+    return await user_service.read_auth_user_account(request, session_id)
+
+@user_router.put("/me", response_model=UserRead, status_code=status.HTTP_200_OK)
+async def update_user_account_data(user_update:UserUpdate,
+                                   user_service:UserService=Depends(get_user_service),
+                                   session_id:str=Depends(get_session_id)):
+
+    return await user_service.update_user_account(user_update, session_id)
 
 
 

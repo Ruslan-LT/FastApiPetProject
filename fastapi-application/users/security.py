@@ -12,6 +12,7 @@ security = HTTPBasic()
 password_hash = PasswordHash.recommended()
 DUMMY_HASH = password_hash.hash("dummypassword")
 COOKIE_SESSION_ID_KEY = 'web-app-session-id'
+COOKIE_ADMIN_KEY = 'web-app-admin'
 
 async def generate_session_id() -> str:
     return str(uuid.uuid4())
@@ -42,3 +43,11 @@ async def get_auth_username(request: Request, credentials: Annotated[HTTPBasicCr
 
     return UserRead(**user_db.model_dump())
 
+async def get_session_id(request: Request):
+    session_id = request.cookies.get(COOKIE_SESSION_ID_KEY)
+    if session_id == None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated"
+        )
+    return session_id
