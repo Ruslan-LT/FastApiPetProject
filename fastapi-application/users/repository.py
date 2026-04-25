@@ -26,13 +26,13 @@ class UserRepository:
         res = await self.session.execute(delete(SessionORM).where(SessionORM.session_id == session_id))
         return res
 
-class AdminRepository:
-    def __init__(self, session: AsyncSession):
-        self.session = session
-
     async def check_user_is_admin(self, username):
         smt = await self.session.execute(select(UserORM).where(UserORM.username == username).options(joinedload(UserORM.admin)))
         return smt
+
+
+
+
 
 
 

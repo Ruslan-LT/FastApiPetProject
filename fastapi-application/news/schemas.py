@@ -14,8 +14,8 @@ class PostRead(Post):
         from_attributes = True
 
 class PostUpdate(BaseModel):
-    title: str | None
-    content: str | None
+    title: str | None = None
+    content: str | None = None
 
 
 class PostCreate(Post):

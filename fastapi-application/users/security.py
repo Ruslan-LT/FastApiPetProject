@@ -1,5 +1,4 @@
 import uuid
-
 from pwdlib import PasswordHash
 from fastapi import Request, HTTPException, Depends, status
 from typing import Annotated
@@ -13,6 +12,10 @@ password_hash = PasswordHash.recommended()
 DUMMY_HASH = password_hash.hash("dummypassword")
 COOKIE_SESSION_ID_KEY = 'web-app-session-id'
 COOKIE_ADMIN_KEY = 'web-app-admin'
+COOKIE_USER_ID_KEY = 'web-app-user_id'
+COOKIE_SESSION_EXPIRES_KEY = 'web-app-session-expires'
+
+COOKIE_LIST = [COOKIE_SESSION_ID_KEY, COOKIE_USER_ID_KEY, COOKIE_ADMIN_KEY, COOKIE_SESSION_EXPIRES_KEY]
 
 async def generate_session_id() -> str:
     return str(uuid.uuid4())
@@ -20,10 +23,8 @@ async def generate_session_id() -> str:
 async def verify_password(plain_password, hashed_password):
     return password_hash.verify(plain_password, hashed_password)
 
-
 async def get_password_hash(password):
     return password_hash.hash(password)
-
 
 async def get_auth_username(request: Request, credentials: Annotated[HTTPBasicCredentials, Depends(security)],
                             session:Annotated[AsyncSession,Depends(session_dependency)]) -> UserRead:

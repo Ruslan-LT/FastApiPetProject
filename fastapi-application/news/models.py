@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from users.models import UserORM
+    from admin.models import AdminORM
 
 from src.base import Base
 
@@ -21,8 +22,12 @@ class PostORM(Base):
 
     user:Mapped['UserORM'] = relationship(back_populates='posts')
 
+    query:Mapped['PostQueryORM'] = relationship(back_populates='post', uselist=False)
+
 class PostQueryORM(Base):
     __tablename__ = 'post_query'
     id:Mapped[int] = mapped_column(Integer, primary_key=True)
-    post_id:Mapped[int] = mapped_column(ForeignKey('post.id'))
+    post_id:Mapped[int] = mapped_column(ForeignKey('post.id'), unique=True)
+
+    post:Mapped['PostORM'] = relationship(back_populates='query')
 

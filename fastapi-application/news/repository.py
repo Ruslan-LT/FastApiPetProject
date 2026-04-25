@@ -16,6 +16,15 @@ class NewsRepository:
         return self.session.add(post)
 
     async def read_post(self, id: int):
-        res = await self.session.execute(select(PostORM).where(PostORM.id == id))
+        res = await self.session.execute(select(PostORM).where(PostORM.id == id).options(joinedload(PostORM.query)))
         return res
+
+    async def delete_post(self, id: int):
+        res = await self.session.execute(delete(PostORM).where(PostORM.id == id))
+
+    async def remove_from_query(self, id: int):
+        smt = await self.session.execute(delete(PostQueryORM).where(PostQueryORM.post_id == id))
+        return smt
+
+
 
