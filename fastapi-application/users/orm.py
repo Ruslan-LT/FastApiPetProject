@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
 from users.schemas import UserCreate, UserRead, UserInDB
-from users.models import UserORM, SessionORM
+from users.models import UserORM
 from .convert_models import convert_user_model
 
 async def get_user_from_orm(username: str, session: AsyncSession):

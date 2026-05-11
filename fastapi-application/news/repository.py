@@ -1,9 +1,7 @@
 from sqlalchemy import select, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
-
 from news.models import PostORM, PostQueryORM
-from users.models import UserORM, SessionORM
 
 class NewsRepository:
     def __init__(self, session: AsyncSession):

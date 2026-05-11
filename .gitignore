@@ -210,6 +210,6 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
-
+certs/
 # Streamlit
 .streamlit/secrets.toml

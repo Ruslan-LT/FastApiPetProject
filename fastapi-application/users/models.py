@@ -28,20 +28,17 @@ class UserORM(Base):
 
     posts:Mapped[list['PostORM']] = relationship(back_populates='user',)
 
-    user_session:Mapped['SessionORM'] = relationship(back_populates='user', uselist=False)
+    jwt_refresh:Mapped['JWT_RefreshToken'] = relationship(back_populates='user',)
 
     __table_args__ = (
         UniqueConstraint('username'),
     )
 
-class SessionORM(Base):
-    __tablename__ = "sessions"
-    session_id: Mapped[str] = mapped_column(String(64), primary_key=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), unique=True)
-    expires_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        default=lambda: datetime.now(timezone.utc) + timedelta(days=1),
-        index=True
-    )
 
-    user:Mapped['UserORM'] = relationship(back_populates='user_session')
+class JWT_RefreshToken(Base):
+    __tablename__ = "jwt_refresh_tokens"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id:Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
+    token:Mapped[str] = mapped_column(String)
+
+    user:Mapped['UserORM'] = relationship(back_populates='jwt_refresh')

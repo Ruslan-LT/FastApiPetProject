@@ -6,7 +6,8 @@ from .repository import NewsRepository
 from news.schemas import PostCreate, PostRead
 from fastapi import status
 from users.repository import UserRepository
-from users.security import COOKIE_SESSION_ID_KEY, COOKIE_ADMIN_KEY, COOKIE_USER_ID_KEY
+from users.security import COOKIE_SESSION_ID_KEY, COOKIE_ADMIN_KEY, COOKIE_USER_ID_KEY, COOKIE_ACCESS_TOKEN_KEY
+from auth.utils import decode_jwt
 
 class NewsService:
     def __init__(self, session: AsyncSession):
@@ -15,10 +16,8 @@ class NewsService:
         self.user_repository = UserRepository(session)
 
     async def create_post(self, post: PostCreate, request: Request):
-        user_session_id = request.cookies.get(COOKIE_SESSION_ID_KEY)
-        if user_session_id == None:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
-        user_id = request.cookies.get(COOKIE_USER_ID_KEY)
+        access_token = request.cookies.get(COOKIE_ACCESS_TOKEN_KEY)
+        user_id = (await decode_jwt(access_token))["sub"]
         post_obj = PostORM(**post.model_dump(), user_id=int(user_id))
         await self.news_repository.create_post(post_obj)
         await self.session.flush()

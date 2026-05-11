@@ -4,7 +4,7 @@ from src.config import settings
 from asyncio import current_task
 
 async_engine = create_async_engine(
-    url=settings.DATABASE_URL_asyncpg,
+    url=settings.db_settings.DATABASE_URL_asyncpg,
     echo=True,
 )
 
